@@ -3,10 +3,10 @@ library(tidyverse)
 library(lubridate)
 
 #### Reading raw csv
-sessions <- read_csv("~/boc/sessions.csv", 
+sessions <- read_csv('https://www.ocf.berkeley.edu/~shichenh/sessions_data/staff_sessions.csv',
                      col_names = c('id', 'host', 'start', 'end', 'duration'))
-
-s.sessions <- read_csv("~/boc/staff_sessions.csv",
+  
+s.sessions <- read_csv("https://www.ocf.berkeley.edu/~shichenh/sessions_data/sessions.csv",
                        col_names = c('id', 'host', 'user', 'start', 'end', 'last.update', 'duration'))
 
 
