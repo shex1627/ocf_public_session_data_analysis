@@ -1,27 +1,40 @@
 #### Importing my baes 
 library(tidyverse)
 library(lubridate)
+library(RMySQL)
+
+#### SQL connection
+ocf.db <- dbConnect(MySQL(), user="anonymous", host="mysql.ocf.berkeley.edu")
 
 #### Reading raw csv
-sessions <- read_csv('https://www.ocf.berkeley.edu/~shichenh/sessions_data/sessions.csv',
-                     col_names = c('id', 'host', 'start', 'end', 'duration'))
-  
-s.sessions <- read_csv("https://www.ocf.berkeley.edu/~shichenh/sessions_data/staff_sessions.csv",
-                       col_names = c('id', 'host', 'user', 'start', 'end', 'last.update', 'duration'))
 
+#### Get total Sessions
+rs <- dbSendQuery(ocf.db, "select * from ocfstats.`session_duration_public`")
+sessions <- dbFetch(rs, n=-1)
+
+#### Get Staff Sessions
+rs <- dbSendQuery(ocf.db, "select * from ocfstats.`staff_session_duration_public`")
+s.sessions <- dbFetch(rs, n=-1)
 
 sessions <- sessions %>% 
   #delete the current session
   filter(!is.na(end)) %>%
   #delete all sessions piror to the semester
   filter(start >= ymd('2017-08-23')) %>%
+  #converting start and end string to R date obejctve
+  mutate(start = as.POSIXct(start)) %>% 
+  mutate(end = as.POSIXct(end)) %>%
   #calculating session duration in minutes 
-  mutate(duration.min = as.numeric(round((end - start)/60, 2)))
+  mutate(duration = hms(duration)) %>%
+  mutate(duration.min = hour(duration)*60 + minute(duration))
   
 s.sessions <- s.sessions %>% 
     filter(!is.na(end)) %>%
     filter(start >= ymd('2017-08-23')) %>%
-    mutate(duration.min = as.numeric(round((end - start)/60, 2)))
+    mutate(start = as.POSIXct(start)) %>% 
+    mutate(end = as.POSIXct(end)) %>%
+    mutate(duration = hms(duration)) %>%
+    mutate(duration.min = hour(duration)*60 + minute(duration))
 
 not.s.sessions <- sessions %>% 
   #removing staff sessions from regular sessions

@@ -18,9 +18,8 @@ not.s.sessions <- not.s.sessions %>%
   mutate(weekday = weekdays(date))
 
 count.hour <- not.s.sessions %>% count(date, hour, weekday)
-range(count.hour$n)
+summary(count.hour$n)
 hist(count.hour$n)
-View(count.hour %>% filter(n >= 70))
 ```
 
 ```{r lab_hours}

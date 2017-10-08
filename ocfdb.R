@@ -2,3 +2,6 @@ library(RMySQL)
 ocf.db <- dbConnect(MySQL(), user="anonymous", host="mysql.ocf.berkeley.edu")
 rs <- dbSendQuery(ocf.db, "select * from ocfstats.`session_duration_public`")
 sessions.db <- dbFetch(rs, n=-1)
+
+rs <- dbSendQuery(ocf.db, "select * from ocfstats.`staff_session_duration_public`")
+sessions.db <- dbFetch(rs, n=-1)
