@@ -1,0 +1,68 @@
+---
+title: "R Notebook"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+# OCF
+```{r source}
+suppressMessages(source("~/boc/ocf_session_data_analysis/session_process.R"))
+```
+
+```{r}
+not.s.sessions <- not.s.sessions %>% 
+  mutate(date = date(start)) %>%
+  mutate(hour = hour(start)) %>%
+  mutate(date.hour = paste(date, hour)) %>%
+  mutate(weekday = weekdays(date))
+
+count.hour <- not.s.sessions %>% count(date, hour, weekday)
+range(count.hour$n)
+hist(count.hour$n)
+View(count.hour %>% filter(n >= 70))
+```
+
+```{r lab_hours}
+hours <- list(
+  Sunday = seq(11, 7+12),
+  Monday = seq(9, 6+12)	,
+  Tuesday	= seq(9, 8+12),
+  Wednesday	= seq(9, 10+12),
+  Thursday	= seq(9, 8+12),
+  Friday	= seq(9, 6+12),
+  Saturday	= seq(11, 7 +12)
+)
+
+week.days <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+```
+
+
+```{r}
+sun <- spread(count.hour %>% filter(weekday == "Sunday" & hour %in% hours$Sunday) %>% select(-weekday), date, n)
+sun
+
+ggplot(count.hour %>% filter(weekday == "Sunday" & hour %in% Sunday), aes(x=date, y=hour)) +
+  geom_raster(aes(fill=n)) +
+  scale_fill_gradient(low = 'cyan', high='darkcyan')
+
+week.days.sessions <- list()
+for (day in week.days) {
+  week.days.sessions[[day]] = spread(count.hour %>% filter(weekday == day & hour %in% hours[[day]]) %>% select(-weekday), date, n)
+}
+```
+
+wtf man there are non-staff sessions after the hour!!!!!!!!!!! 
+
+```{r}
+begin <- as.POSIXct("2017-08-23 00:00:00", tz="UTC")
+end <- as.POSIXct("2017-10-06 00:00:00", tz="UTC")
+times <- data.frame(hour = seq(begin, end, by="hour"))
+```
+
+###
+```{r}
+## check trends on days/ as a whole 
+## breakdown hours to half-hour intervals/or maybe even more 
+```
+
