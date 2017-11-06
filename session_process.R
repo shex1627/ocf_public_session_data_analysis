@@ -19,9 +19,9 @@ s.sessions <- dbFetch(rs, n=-1)
 sessions <- sessions %>% 
   #delete the current session
   filter(!is.na(end)) %>%
-  #delete all sessions piror to the semester
+  #delete all sessions prior to the semester
   filter(start >= ymd('2017-08-23')) %>%
-  #converting start and end string to R date obejctve
+  #converting start and end string to R date objective
   mutate(start = as.POSIXct(start)) %>% 
   mutate(end = as.POSIXct(end)) %>%
   #calculating session duration in minutes 

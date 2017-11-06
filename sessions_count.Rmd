@@ -22,6 +22,20 @@ summary(count.hour$n)
 hist(count.hour$n)
 ```
 
+```{r}
+s.sessions <- s.sessions %>% 
+  mutate(date = date(start)) %>%
+  mutate(hour = hour(start)) %>%
+  mutate(date.hour = paste(date, hour)) %>%
+  mutate(weekday = weekdays(date))
+
+
+
+count.hour <- s.sessions %>% count(date, hour, weekday)
+summary(count.hour$n)
+hist(count.hour$n)
+```
+
 ```{r lab_hours}
 hours <- list(
   Sunday = seq(11, 7+12),

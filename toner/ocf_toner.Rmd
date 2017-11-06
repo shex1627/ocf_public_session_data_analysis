@@ -1,0 +1,55 @@
+---
+title: "OCF toner"
+output: html_notebook
+---
+
+```{r}
+#### Importing my baes 
+library(tidyverse)
+library(lubridate)
+library(RMySQL)
+```
+
+```{r}
+#### SQL connection
+ocf.db <- dbConnect(MySQL(), user="anonymous", host="mysql.ocf.berkeley.edu")
+```
+
+```{r}
+rs <- dbSendQuery(ocf.db, "SELECT * FROM ocfstats.`printer_toner_public`")
+toner <- dbFetch(rs, n=-1)
+dbDisconnect(ocf.db)
+```
+
+```{r cleaning}
+tone2017 <- toner %>% 
+  rename(time = date) %>%
+  mutate(date = date(time)) %>%
+  filter(date >= "2017-08-23")
+```
+
+```{r}
+papercut <- tone2017 %>% 
+  filter(printer == "papercut") %>%
+  select(c(time, date, value))
+
+pagefault <- tone2017 %>% 
+  filter(printer == "pagefault") %>%
+  select(c(time, date, value))
+```
+
+```{r data_manipulating}
+papercut <- papercut %>%
+  mutate(diff = c(0, diff(value)))
+```
+
+
+```{r}
+plot(papercut$value, col = "blue")
+points(pagefault$value, col = "red")
+
+
+plot(diff(papercut$value), col = "blue")
+points(diff(pagefault$value), col = "red")
+```
+
